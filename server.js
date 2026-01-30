@@ -32,6 +32,10 @@ app.post('/tarefas', async (req, res) => {
     var custo = req.body.custo;
     var data = req.body.data_limite;
 
+    if (custo < 0) {
+        return res.status(400).json({ erro: 'Custo não pode ser negativo' });
+    }
+
     try {
         
         var resOrdem = await pool.query('SELECT MAX(ordem_apresentacao) as maximo FROM Tarefas');
@@ -66,6 +70,10 @@ app.put('/tarefas/:id', async (req, res) => {
     var n = req.body.nome;
     var c = req.body.custo;
     var d = req.body.data_limite;
+
+    if (c < 0) {
+        return res.status(400).json({ erro: 'Custo não pode ser negativo' });
+    }
 
     try {
         await pool.query('UPDATE Tarefas SET nome_tarefa = $1, custo = $2, data_limite = $3 WHERE id = $4', [n, c, d, id]);
@@ -116,7 +124,7 @@ app.patch('/tarefas/:id/mover', async (req, res) => {
         
         if (resVizinho.rows.length > 0) {
             var vizinho = resVizinho.rows[0];
-         
+            
             await client.query('UPDATE Tarefas SET ordem_apresentacao = -999 WHERE id = $1', [atual.id]);
             await client.query('UPDATE Tarefas SET ordem_apresentacao = $1 WHERE id = $2', [atual.ordem_apresentacao, vizinho.id]);
             await client.query('UPDATE Tarefas SET ordem_apresentacao = $1 WHERE id = $2', [vizinho.ordem_apresentacao, atual.id]);
