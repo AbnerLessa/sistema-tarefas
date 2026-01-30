@@ -23,7 +23,7 @@ Você pode testar a aplicação rodando diretamente na nuvem (Render) sem precis
 O sistema atende a todos os requisitos do PDF:
 
 - [x] **Listagem:** Exibe tarefas ordenadas por uma ordem definida.
-- [x] **Destaque:** Tarefas com custo ≥ R$ 1.000,00 ficam com fundo amarelo.
+- [x] **Destaque:** Tarefas com custo ≥ R$ 1.000,00 ficam com fundo diferente.
 - [x] **Inclusão:** Impede nomes duplicados e insere no final da lista.
 - [x] **Edição:** Permite alterar nome, custo e data (com validação de duplicidade).
 - [x] **Exclusão:** Remove a tarefa após confirmação.
