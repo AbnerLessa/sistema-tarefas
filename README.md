@@ -12,8 +12,6 @@ Este projeto é um sistema web para gerenciamento de tarefas (CRUD), onde é pos
 
 ## 🔗 Link de Acesso (Online)
 
-Você pode testar a aplicação rodando diretamente na nuvem (Render) sem precisar instalar nada:
-
 ### 👉 [CLIQUE AQUI PARA ACESSAR O SISTEMA](https://tarefas-abner.onrender.com)
 
 ---
