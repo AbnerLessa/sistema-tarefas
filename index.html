@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Tarefas | Fatto CS</title>
+    <link rel="icon" href="logo_fatto_1-1.png" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        
+        :root {
+            --fatto-red: #E31C23; 
+            --fatto-dark: #333333;
+            --bg-color: #f0f2f5;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--fatto-dark);
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 40px; margin: 0;
+        }
+
+        .container {
+            background: white; width: 100%; max-width: 1000px;
+            padding: 40px; border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--fatto-red);
+        }
+
+        .header-brand {
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 30px; gap: 20px;
+        }
+        
+        .header-brand img { height: 60px; width: auto; }
+
+        .header-brand h1 {
+            margin: 0; color: var(--fatto-dark); font-size: 26px; font-weight: 700;
+            padding-left: 20px; border-left: 2px solid #eee; line-height: 1.2;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        
+        th { 
+            background-color: var(--fatto-dark); color: white; 
+            padding: 12px 15px; text-align: left; font-weight: 600; 
+            text-transform: uppercase; font-size: 0.85em; letter-spacing: 0.5px;
+        }
+        
+        td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: middle; }
+        tr:hover { background-color: #fcfcfc; }
+
+        .caro { background-color: #fff5f5 !important; color: #a00; font-weight: 600; }
+        .caro td { border-bottom: 1px solid #ffcccc; }
+
+        .total-box {
+            margin-top: 25px; text-align: right; font-size: 1.1em; 
+            border-top: 1px solid #eee; padding-top: 15px; color: var(--fatto-dark);
+        }
+
+        button { 
+            border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; 
+            font-size: 14px; transition: all 0.2s; margin-right: 4px;
+        }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .btn-action { background-color: #e2e6ea; color: #495057; }
+        .btn-action:hover { background-color: #dbe2e8; color: #212529; }
+
+        .btn-delete { background-color: white; border: 1px solid #ffcccc; color: var(--fatto-red); }
+        .btn-delete:hover { background-color: var(--fatto-red); color: white; }
+
+        .btn-add { 
+            background-color: var(--fatto-red); color: white; padding: 12px 24px; 
+            font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;
+            margin-top: 20px; float: right; border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(227, 28, 35, 0.2);
+        }
+        .btn-add:hover { background-color: #c0151b; }
+
+        #modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content { 
+            background-color: white; padding: 30px; border-radius: 6px; width: 380px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3); animation: fadeIn 0.3s ease;
+            border-top: 4px solid var(--fatto-red);
+        }
+        @keyframes fadeIn { from {opacity: 0; transform: translateY(-20px);} to {opacity: 1; transform: translateY(0);} }
+        
+        .modal-header h2 { margin-top: 0; color: var(--fatto-dark); font-size: 1.5em; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 0.9em; }
+        .form-group input { 
+            width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; 
+            box-sizing: border-box; font-size: 15px;
+        }
+        .form-group input:focus { border-color: var(--fatto-red); outline: none; }
+        
+        .erro { 
+            background-color: #f8d7da; color: #721c24; padding: 10px; 
+            border-radius: 4px; margin-bottom: 15px; display: none; font-size: 0.9em;
+        }
+
+        .modal-buttons { text-align: right; margin-top: 25px; }
+        .btn-cancel { background-color: #6c757d; color: white; }
+        .btn-save { background-color: var(--fatto-red); color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="header-brand">
+            <img src="logo_fatto_1-1.png" alt="Logo Fatto CS">
+            <h1>Gestão de Tarefas</h1>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 70px; text-align: center;">#</th>
+                    <th>Tarefa</th>
+                    <th style="width: 140px;">Custo</th>
+                    <th style="width: 140px;">Prazo</th>
+                    <th style="width: 160px; text-align: center;">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-tarefas">
+            </tbody>
+        </table>
+        
+        <div class="total-box">
+            Total do Projeto: <strong id="custo-total">R$ 0,00</strong>
+        </div>
+
+        <button class="btn-add" onclick="abrirModal()">
+            <i class="fa-solid fa-plus"></i> Nova Tarefa
+        </button>
+    </div>
+
+    <div id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="titulo-modal">Nova Tarefa</h2>
+            </div>
+            <div id="msg-erro" class="erro"></div>
+            
+            <div class="form-group">
+                <label>Descrição:</label>
+                <input type="text" id="nome" placeholder="Ex: Analisar requisitos...">
+            </div>
+            <div class="form-group">
+                <label>Custo Estimado (R$):</label>
+                <input type="number" id="custo" step="0.01" min="0" placeholder="0,00">
+            </div>
+            <div class="form-group">
+                <label>Data Limite:</label>
+                <input type="date" id="data">
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-save" onclick="salvar()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+        var url_api = '/tarefas'; 
+        var id_edicao = null;
+
+       
+        async function carregar() {
+            console.log("carregando lista...");
+            try {
+                var resposta = await fetch(url_api);
+                var lista = await resposta.json();
+                
+                var tabela = document.getElementById('tabela-tarefas');
+                tabela.innerHTML = ''; 
+                var soma = 0;
+
+                
+                for (var i = 0; i < lista.length; i++) {
+                    var t = lista[i];
+                    var linha = document.createElement('tr');
+                    
+                    // ve se é caro
+                    if (Number(t.custo) >= 1000) {
+                        linha.classList.add('caro');
+                    }
+
+                  
+                    var dt = new Date(t.data_limite);
+                    dt.setMinutes(dt.getMinutes() + dt.getTimezoneOffset());
+                    var dia = dt.getDate().toString().padStart(2, '0');
+                    var mes = (dt.getMonth()+1).toString().padStart(2, '0');
+                    var ano = dt.getFullYear();
+                    var data_pronta = dia + "/" + mes + "/" + ano;
+                    
+                   
+                    var dinheiro = Number(t.custo).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                    soma = soma + Number(t.custo);
+
+                    linha.innerHTML = `
+                        <td style="text-align: center; font-weight: bold; color: #888;">${t.ordem_apresentacao}</td>
+                        <td>${t.nome_tarefa}</td>
+                        <td>${dinheiro}</td>
+                        <td>${data_pronta}</td>
+                        <td style="text-align: center;">
+                            <button class="btn-action" title="Editar" onclick="editar(${t.id}, '${t.nome_tarefa}', ${t.custo}, '${t.data_limite}')">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="btn-delete" title="Excluir" onclick="apagar(${t.id})">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                            <button class="btn-action" onclick="trocar(${t.id}, 'cima')"><i class="fa-solid fa-chevron-up"></i></button>
+                            <button class="btn-action" onclick="trocar(${t.id}, 'baixo')"><i class="fa-solid fa-chevron-down"></i></button>
+                        </td>
+                    `;
+                    tabela.appendChild(linha);
+                }
+
+              
+                document.getElementById('custo-total').innerText = soma.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            } catch (e) {
+                console.log("deu erro no carregar");
+                console.log(e);
+            }
+        }
+
+        async function apagar(id) {
+            var confirma = confirm('Quer mesmo excluir?');
+            if (confirma == true) {
+                try {
+                    await fetch(url_api + '/' + id, { method: 'DELETE' });
+                    carregar();
+                } catch (e) { alert('Erro ao excluir'); }
+            }
+        }
+
+        async function trocar(id, lado) {
+            console.log("movendo para " + lado);
+            try {
+                await fetch(url_api + '/' + id + '/mover', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ direcao: lado })
+                });
+                carregar();
+            } catch (e) { console.log(e); }
+        }
+
+        function editar(id, nome, custo, dt_original) {
+            id_edicao = id;
+            document.getElementById('titulo-modal').innerText = 'Editar Tarefa';
+            document.getElementById('nome').value = nome;
+            document.getElementById('custo').value = custo;
+            
+           
+            var pedaco = new Date(dt_original).toISOString().split('T')[0];
+            document.getElementById('data').value = pedaco;
+            
+            abrirModalVisual();
+        }
+
+        function abrirModal() {
+            id_edicao = null;
+            document.getElementById('titulo-modal').innerText = 'Nova Tarefa';
+            document.getElementById('nome').value = '';
+            document.getElementById('custo').value = '';
+            document.getElementById('data').value = '';
+            document.getElementById('msg-erro').style.display = 'none';
+            abrirModalVisual();
+        }
+
+        function abrirModalVisual() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function fecharModal() { 
+            document.getElementById('modal').style.display = 'none'; 
+        }
+
+        async function salvar() {
+            var campo_nome = document.getElementById('nome').value;
+            var campo_custo = document.getElementById('custo').value;
+            var campo_data = document.getElementById('data').value;
+            
+            if (campo_nome == "" || campo_custo == "" || campo_data == "") {
+                mostrarErro('Preencha tudo por favor.');
+                return;
+            }
+
+            var dados = { nome: campo_nome, custo: campo_custo, data_limite: campo_data };
+            var metodo = 'POST';
+            var link = url_api;
+
+            if (id_edicao != null) {
+                metodo = 'PUT';
+                link = url_api + '/' + id_edicao;
+            }
+
+            try {
+                var res = await fetch(link, {
+                    method: metodo,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+
+                if (res.ok) {
+                    fecharModal();
+                    carregar();
+                } else {
+                    var erroJson = await res.json();
+                    mostrarErro(erroJson.erro);
+                }
+            } catch (e) { 
+                mostrarErro('Erro de conexão'); 
+                console.log(e);
+            }
+        }
+
+        function mostrarErro(texto) {
+            var div = document.getElementById('msg-erro');
+            div.innerText = texto;
+            div.style.display = 'block';
+        }
+        
+    
+        carregar();
+    </script>
+</body>
+</html>
