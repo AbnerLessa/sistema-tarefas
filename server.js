@@ -35,6 +35,10 @@ app.post('/tarefas', async (req, res) => {
     if (custo < 0) {
         return res.status(400).json({ erro: 'Custo não pode ser negativo' });
     }
+    
+    if (custo > 99999999.99) {
+        return res.status(400).json({ erro: 'O custo excede o limite máximo permitido' });
+    }
 
     try {
         
@@ -73,6 +77,10 @@ app.put('/tarefas/:id', async (req, res) => {
 
     if (c < 0) {
         return res.status(400).json({ erro: 'Custo não pode ser negativo' });
+    }
+    
+    if (c > 99999999.99) {
+        return res.status(400).json({ erro: 'O custo excede o limite máximo permitido' });
     }
 
     try {
