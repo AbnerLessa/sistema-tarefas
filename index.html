@@ -127,6 +127,7 @@
         <table>
             <thead>
                 <tr>
+                    <th style="width: 50px; text-align: center;">ID</th>
                     <th style="width: 70px; text-align: center;">#</th>
                     <th>Tarefa</th>
                     <th style="width: 140px;">Custo</th>
@@ -160,7 +161,7 @@
             </div>
             <div class="form-group">
                 <label>Custo Estimado (R$):</label>
-                <input type="number" id="custo" step="0.01" min="0" placeholder="0,00">
+                <input type="number" id="custo" step="0.01" min="0" max="99999999" placeholder="0,00">
             </div>
             <div class="form-group">
                 <label>Data Limite:</label>
@@ -213,6 +214,7 @@
                     soma = soma + Number(t.custo);
 
                     linha.innerHTML = `
+                        <td style="text-align: center; font-weight: bold; color: var(--primary-red);">${t.id}</td>
                         <td style="text-align: center; font-weight: bold; color: #888;">${t.ordem_apresentacao}</td>
                         <td>${t.nome_tarefa}</td>
                         <td>${dinheiro}</td>
@@ -272,6 +274,8 @@
             var pedaco = new Date(dt_original).toISOString().split('T')[0];
             document.getElementById('data').value = pedaco;
             
+            document.getElementById('msg-erro').style.display = 'none';
+
             abrirModalVisual();
         }
 
@@ -287,6 +291,10 @@
 
         function abrirModalVisual() {
             document.getElementById('modal').style.display = 'flex';
+
+            setTimeout(function() {
+                document.getElementById('nome').focus();
+            }, 100);
         }
 
         function fecharModal() { 
@@ -300,6 +308,11 @@
             
             if (campo_nome == "" || campo_custo == "" || campo_data == "") {
                 mostrarErro('Preencha tudo por favor.');
+                return;
+            }
+
+            if (Number(campo_custo) > 99999999) {
+                mostrarErro('O custo excede o limite máximo permitido.');
                 return;
             }
 
@@ -338,7 +351,6 @@
             div.style.display = 'block';
         }
         
-    
         carregar();
     </script>
 </body>
